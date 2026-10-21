@@ -206,7 +206,113 @@ sudo certbot --nginx -d your-domain.com
 
 ---
 
-## 5. 想让链接私密一些
+## 5. 后续更新（GitHub 流程）
+
+思路：**源码走 Git，大文件留在服务器**。
+
+### 为什么视频不能进 Git
+
+- 结尾视频 177 MB，**GitHub 单文件硬上限 100 MB**，推不上去
+- 仓库体积膨胀后克隆会非常慢
+
+所以 `.gitignore` 已经把 `assets/video/*.mp4`、`dist/`、`refs/`、`character_clips_v2/`、
+`applejack_voice/`、`clips/`、`node_modules/` 全部排除。仓库只有约 **13 MB**
+（源码 + 配音音频 + 文档），视频单独放服务器。
+
+### 一次性准备
+
+**① 本地建仓库并推送**（仓库请设为 **private**，里面有商业歌曲/MV）
+
+```powershell
+# 第一次需要登录（浏览器授权）
+gh auth login
+
+# 创建私有仓库并推送
+gh repo create starberry --private --source=. --remote=origin --push
+```
+
+不用 gh 的话，先在网页上建空仓库，然后：
+
+```powershell
+git remote add origin https://github.com/<你的用户名>/starberry.git
+git push -u origin main
+```
+
+**② 服务器装 git 和 Node**
+
+```bash
+sudo apt-get update -qq && sudo apt-get install -y git nodejs npm
+node -v && npm -v
+```
+
+> 构建只需要 Node 18+。Ubuntu 24.04 自带的就够。
+
+**③ 服务器克隆仓库**
+
+```bash
+cd ~
+git clone https://github.com/<你的用户名>/starberry.git
+cd starberry
+```
+
+**④ 把视频放到仓库目录里**（不进 Git，但构建时要能读到）
+
+```bash
+mkdir -p ~/starberry/assets/video
+cp /var/www/starberry/assets/video/finale.mp4 ~/starberry/assets/video/
+```
+
+**⑤ 首次构建发布**
+
+```bash
+bash deploy/update.sh
+```
+
+### 以后每次更新
+
+```powershell
+# 本地改完
+git add -A
+git commit -m "改了某某内容"
+git push
+```
+
+```bash
+# 服务器上
+cd ~/starberry
+bash deploy/update.sh
+```
+
+`deploy/update.sh` 会依次：`git pull` → `npm ci` → `npm run build` → `rsync` 到
+`/var/www/starberry` → 修权限 → `nginx -t` → `reload`。
+
+### 不想在服务器装 Node 的备选方案
+
+本地构建好，只同步产物（视频用 `--exclude` 跳过，避免重复上传 177 MB）：
+
+```powershell
+npm run build
+rsync -avz --delete --exclude 'assets/video' dist/ root@123.56.42.98:/var/www/starberry/
+```
+
+然后服务器上修一次权限：
+
+```bash
+sudo chown -R www-data:www-data /var/www/starberry
+sudo find /var/www/starberry -type f -exec chmod 644 {} \;
+```
+
+### 注意
+
+- **`.gitattributes` 已锁定换行符**：`*.sh` 强制 LF。否则 Windows 提交的脚本到 Linux 上会报
+  `bad interpreter: /bin/bash^M`。
+- 配音是**内容**不是产物，已经提交进仓库（`assets/audio/voice/`，约 15 MB），
+  所以服务器 `git pull` 就能拿到新配音。
+- 改完台词如果重新生成了配音，记得把新的 `assets/audio/voice/index.json` 一起提交。
+
+---
+
+## 6. 想让链接私密一些
 
 这是一份生日礼物，可能不想被搜索引擎或陌生人翻到：
 
@@ -236,7 +342,7 @@ Disallow: /
 
 ---
 
-## 6. 替换结尾视频（可选，能省很多流量）
+## 7. 替换结尾视频（可选，能省很多流量）
 
 原始视频 177 MB、码率 11 Mbps，手机上加载会很久。`refs/_web_video/` 里已备好三档：
 
@@ -257,7 +363,7 @@ npm run build
 
 ---
 
-## 7. 常见问题
+## 8. 常见问题
 
 **一直白屏 / 卡在"正在点亮小屋"**
 最常见的原因是缺失资源被回落成了 HTML（状态 200），导致 `BootScene` 卡在 LOADING。
@@ -290,7 +396,7 @@ curl -o /dev/null -s -w "%{http_code}\n" http://<你的地址>/assets/audio/morn
 
 ---
 
-## 8. 关于版权
+## 9. 关于版权
 
 游戏里有**商业歌曲和 MV**（结尾视频、背景音乐）。自己玩、送给朋友没有问题；
 但**部署到公网就等于向他人提供这些内容的分发**。
