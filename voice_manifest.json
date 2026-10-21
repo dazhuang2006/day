@@ -1,0 +1,599 @@
+{
+  "generatedAt": "2026-10-07T13:10:33.448Z",
+  "note": "由 tools/extract-lines.mjs 自动生成；id = speaker + 文本哈希，台词不变则 id 不变",
+  "counts": {
+    "total": 116,
+    "bySpeaker": {
+      "applejack": 19,
+      "fluttershy": 11,
+      "pinkie": 12,
+      "rainbow": 8,
+      "rarity": 13,
+      "starberry": 38,
+      "twilight": 15
+    },
+    "narratorCandidates": 38
+  },
+  "lines": [
+    {
+      "id": "applejack_0d18cab395",
+      "speaker": "applejack",
+      "text": "甜点也完成了。"
+    },
+    {
+      "id": "applejack_17c83371ba",
+      "speaker": "applejack",
+      "text": "（气声）碧琪！"
+    },
+    {
+      "id": "applejack_2ae07f7c8f",
+      "speaker": "applejack",
+      "text": "东西都给你备齐了——苹果、草莓、奶油、巧克力、糖霜。"
+    },
+    {
+      "id": "applejack_2c08bbf5ec",
+      "speaker": "applejack",
+      "text": "就等今晚了。"
+    },
+    {
+      "id": "applejack_2dd155f585",
+      "speaker": "applejack",
+      "text": "（小声）还没到。再等一下下。"
+    },
+    {
+      "id": "applejack_38e490a00b",
+      "speaker": "applejack",
+      "text": "碧琪。"
+    },
+    {
+      "id": "applejack_4cf2b4a2c6",
+      "speaker": "applejack",
+      "text": "材料齐了，来吧。"
+    },
+    {
+      "id": "applejack_72825d7147",
+      "speaker": "applejack",
+      "text": "包得真好看。珍奇那双手，啥都包得漂亮。"
+    },
+    {
+      "id": "applejack_74c9fdeeb1",
+      "speaker": "applejack",
+      "text": "材料还没齐呢，先去收齐吧。"
+    },
+    {
+      "id": "applejack_7daae7b2ba",
+      "speaker": "applejack",
+      "text": "时间不早啦，去小屋看看吧。"
+    },
+    {
+      "id": "applejack_7e7143f58b",
+      "speaker": "applejack",
+      "text": "礼物我先替你摆在桌上了，别一直抱着。"
+    },
+    {
+      "id": "applejack_941f875aba",
+      "speaker": "applejack",
+      "text": "嘿，你可算来了。"
+    },
+    {
+      "id": "applejack_9a930e7eb8",
+      "speaker": "applejack",
+      "text": "碧琪！！"
+    },
+    {
+      "id": "applejack_9e39e0d7ad",
+      "speaker": "applejack",
+      "text": "这可是特别准备的，可不能马虎。"
+    },
+    {
+      "id": "applejack_a408872da2",
+      "speaker": "applejack",
+      "text": "星莓的特别甜点，开工！"
+    },
+    {
+      "id": "applejack_d1c8421f0a",
+      "speaker": "applejack",
+      "text": "秘密。"
+    },
+    {
+      "id": "applejack_e6257654dd",
+      "speaker": "applejack",
+      "text": "嘿嘿，快到了。"
+    },
+    {
+      "id": "applejack_f2b7298abf",
+      "speaker": "applejack",
+      "text": "材料是我一样一样挑的，五样，一样都不能少。"
+    },
+    {
+      "id": "applejack_fc7481065f",
+      "speaker": "applejack",
+      "text": "好了好了，先去把材料收齐。"
+    },
+    {
+      "id": "fluttershy_0253c80ecb",
+      "speaker": "fluttershy",
+      "text": "你、你今天要采花吗？我帮你吧……"
+    },
+    {
+      "id": "fluttershy_0f817bb8f0",
+      "speaker": "fluttershy",
+      "text": "（小声）她一定会喜欢的……"
+    },
+    {
+      "id": "fluttershy_107992663c",
+      "speaker": "fluttershy",
+      "text": "花都齐啦……好漂亮。"
+    },
+    {
+      "id": "fluttershy_1092cc7506",
+      "speaker": "fluttershy",
+      "text": "它们都很期待呢。"
+    },
+    {
+      "id": "fluttershy_22b8eedb1b",
+      "speaker": "fluttershy",
+      "text": "小动物们也想来看，我让它们在外面等着。"
+    },
+    {
+      "id": "fluttershy_3b7dfa9df9",
+      "speaker": "fluttershy",
+      "text": "花……我帮你养了一天，它们现在最有精神。"
+    },
+    {
+      "id": "fluttershy_3c4b05324b",
+      "speaker": "fluttershy",
+      "text": "三朵就够了哦。多了，收花的人会不好意思的。"
+    },
+    {
+      "id": "fluttershy_712b79cdcd",
+      "speaker": "fluttershy",
+      "text": "粉色是给温柔的，紫色是给安静的，白色……是给最干净的那份心意的。"
+    },
+    {
+      "id": "fluttershy_addfdfc555",
+      "speaker": "fluttershy",
+      "text": "小动物们也准备好了。"
+    },
+    {
+      "id": "fluttershy_d9c82e21a7",
+      "speaker": "fluttershy",
+      "text": "啊……星莓，早、早上好。"
+    },
+    {
+      "id": "fluttershy_ead988c254",
+      "speaker": "fluttershy",
+      "text": "希望她今天，会开心。"
+    },
+    {
+      "id": "pinkie_257c984f14",
+      "speaker": "pinkie",
+      "text": "星莓！碧琪来帮忙啦！"
+    },
+    {
+      "id": "pinkie_2653adab81",
+      "speaker": "pinkie",
+      "text": "甜点在这里！我一路小跑过来的，一点都没歪！"
+    },
+    {
+      "id": "pinkie_4783404ddb",
+      "speaker": "pinkie",
+      "text": "星莓星莓！我闻到甜甜的味道啦！"
+    },
+    {
+      "id": "pinkie_53eef4b1ca",
+      "speaker": "pinkie",
+      "text": "对了，彩带也在我这儿！珍奇说配色只能她来定，让我先保管。"
+    },
+    {
+      "id": "pinkie_547326a8c2",
+      "speaker": "pinkie",
+      "text": "（深吸一口气）我、我什么都没说！"
+    },
+    {
+      "id": "pinkie_b46c50b5a5",
+      "speaker": "pinkie",
+      "text": "（气声，破音）好——"
+    },
+    {
+      "id": "pinkie_b6884b3dfe",
+      "speaker": "pinkie",
+      "text": "是不是要做那个——那个给她准备的——"
+    },
+    {
+      "id": "pinkie_c66f153abf",
+      "speaker": "pinkie",
+      "text": "我发誓我没有偷吃……好吧，只尝了一小口。"
+    },
+    {
+      "id": "pinkie_c830abaf0c",
+      "speaker": "pinkie",
+      "text": "……普通的小甜点！对，普通的小甜点！"
+    },
+    {
+      "id": "pinkie_d801b4f348",
+      "speaker": "pinkie",
+      "text": "（把脸埋进抱枕里，小声）我、我现在可以喊了吗？"
+    },
+    {
+      "id": "pinkie_e88dbe84d4",
+      "speaker": "pinkie",
+      "text": "放心！我绝对不会告诉她今天是她的——"
+    },
+    {
+      "id": "pinkie_ebaf4faad8",
+      "speaker": "pinkie",
+      "text": "……她的普通的一天。"
+    },
+    {
+      "id": "rainbow_46a2b0ce7a",
+      "speaker": "rainbow",
+      "text": "（从门缝探进头来，气声）她到街口了！我数过，就她一个！"
+    },
+    {
+      "id": "rainbow_6f52a730d1",
+      "speaker": "rainbow",
+      "text": "嘘——我什么都没说！"
+    },
+    {
+      "id": "rainbow_705b78d83b",
+      "speaker": "rainbow",
+      "text": "（气声）三下之后我就不客气了！"
+    },
+    {
+      "id": "rainbow_74b29c49ac",
+      "speaker": "rainbow",
+      "text": "一、二、三——"
+    },
+    {
+      "id": "rainbow_824eba72e7",
+      "speaker": "rainbow",
+      "text": "……顺便，我去门口看了两回，她还没来。放心。"
+    },
+    {
+      "id": "rainbow_8522118186",
+      "speaker": "rainbow",
+      "text": "放心！这种事情交给我！"
+    },
+    {
+      "id": "rainbow_a208d1534f",
+      "speaker": "rainbow",
+      "text": "差点忘了，不能让她发现！"
+    },
+    {
+      "id": "rainbow_e241f36fd8",
+      "speaker": "rainbow",
+      "text": "星星装饰，我飞了三趟才挑到最亮的一批！"
+    },
+    {
+      "id": "rarity_015be9d795",
+      "speaker": "rarity",
+      "text": "把那串彩灯往左移一点点……完美。"
+    },
+    {
+      "id": "rarity_1d2d24752b",
+      "speaker": "rarity",
+      "text": "记住，左边高一点，右边低一点。这叫层次。"
+    },
+    {
+      "id": "rarity_3297d40ae5",
+      "speaker": "rarity",
+      "text": "（压低声音）彩带左边高了半指。罢了……来不及了，就这样。"
+    },
+    {
+      "id": "rarity_43a05f3426",
+      "speaker": "rarity",
+      "text": "这里，还需要一点装饰。"
+    },
+    {
+      "id": "rarity_44c8e43d6b",
+      "speaker": "rarity",
+      "text": "亲爱的，这是秘密。"
+    },
+    {
+      "id": "rarity_501e782c80",
+      "speaker": "rarity",
+      "text": "（说完，珍奇优雅地转身走开。）"
+    },
+    {
+      "id": "rarity_5bb768e50c",
+      "speaker": "rarity",
+      "text": "亲爱的，你终于来了。"
+    },
+    {
+      "id": "rarity_64587be56a",
+      "speaker": "rarity",
+      "text": "嗯……这个，才适合。"
+    },
+    {
+      "id": "rarity_6464b034e5",
+      "speaker": "rarity",
+      "text": "嘘——我懂。交给我吧。"
+    },
+    {
+      "id": "rarity_89b9c2af5b",
+      "speaker": "rarity",
+      "text": "这个颜色不行……再换一个。"
+    },
+    {
+      "id": "rarity_a07c2eb73f",
+      "speaker": "rarity",
+      "text": "包装这种事，当然要交给我。"
+    },
+    {
+      "id": "rarity_d327917d92",
+      "speaker": "rarity",
+      "text": "彩带我挑了很久。朱红配粉色，才对得上这间屋子。"
+    },
+    {
+      "id": "rarity_e3a8a834b2",
+      "speaker": "rarity",
+      "text": "有些惊喜，如果提前知道了，就不能叫惊喜了。"
+    },
+    {
+      "id": "starberry_0232a4b1f1",
+      "speaker": "starberry",
+      "text": "紫悦，我准备得怎么样？"
+    },
+    {
+      "id": "starberry_13895e959b",
+      "speaker": "starberry",
+      "text": "我们回小屋吧。"
+    },
+    {
+      "id": "starberry_17649d847a",
+      "speaker": "starberry",
+      "text": "紫悦说过，东西要先藏好，计划才不会露馅。"
+    },
+    {
+      "id": "starberry_1a1f0a834d",
+      "speaker": "starberry",
+      "text": "先把包装要用的东西找齐吧……"
+    },
+    {
+      "id": "starberry_1ead8dab2a",
+      "speaker": "starberry",
+      "text": "先跟大家打个招呼，把东西收齐吧。"
+    },
+    {
+      "id": "starberry_22ef3a809e",
+      "speaker": "starberry",
+      "text": "紫悦，你、你小声一点啦。"
+    },
+    {
+      "id": "starberry_35594b89c3",
+      "speaker": "starberry",
+      "text": "嗯，交给我吧。"
+    },
+    {
+      "id": "starberry_35d389e684",
+      "speaker": "starberry",
+      "text": "现在还不行。"
+    },
+    {
+      "id": "starberry_36a534f215",
+      "speaker": "starberry",
+      "text": "走吧，我们去花园。"
+    },
+    {
+      "id": "starberry_3fadfb08be",
+      "speaker": "starberry",
+      "text": "那……那个盒子呢？"
+    },
+    {
+      "id": "starberry_470fd74b26",
+      "speaker": "starberry",
+      "text": "先把这个藏起来。"
+    },
+    {
+      "id": "starberry_4bba79ba98",
+      "speaker": "starberry",
+      "text": "你觉得她会喜欢吗？"
+    },
+    {
+      "id": "starberry_5f3f131c0c",
+      "speaker": "starberry",
+      "text": "嗯，谢谢你，柔柔。"
+    },
+    {
+      "id": "starberry_615f3a6dbf",
+      "speaker": "starberry",
+      "text": "……先看看日历，确认一下时间吧。"
+    },
+    {
+      "id": "starberry_616a7b2f7e",
+      "speaker": "starberry",
+      "text": "刚刚好，来得及。"
+    },
+    {
+      "id": "starberry_651247d49b",
+      "speaker": "starberry",
+      "text": "（声音很轻）……这一次，换我为你准备。"
+    },
+    {
+      "id": "starberry_662d507ed3",
+      "speaker": "starberry",
+      "text": "终于，准备好了。"
+    },
+    {
+      "id": "starberry_6a40560384",
+      "speaker": "starberry",
+      "text": "嗯。那我认真地挑三朵。"
+    },
+    {
+      "id": "starberry_7076d0ef57",
+      "speaker": "starberry",
+      "text": "时间，刚刚好。"
+    },
+    {
+      "id": "starberry_748e31d283",
+      "speaker": "starberry",
+      "text": "（小声）谢谢你，碧琪。"
+    },
+    {
+      "id": "starberry_78b31ad01f",
+      "speaker": "starberry",
+      "text": "要找到几朵特别的花……"
+    },
+    {
+      "id": "starberry_7d1f4a7f45",
+      "speaker": "starberry",
+      "text": "这个，现在不能打开。"
+    },
+    {
+      "id": "starberry_832d639a9e",
+      "speaker": "starberry",
+      "text": "嗯……"
+    },
+    {
+      "id": "starberry_8c308e92fc",
+      "speaker": "starberry",
+      "text": "我、我在准备一点小东西……"
+    },
+    {
+      "id": "starberry_92c4fec653",
+      "speaker": "starberry",
+      "text": "今天，好像有点重要。"
+    },
+    {
+      "id": "starberry_abd2cb5348",
+      "speaker": "starberry",
+      "text": "好呀，谢谢你，柔柔。"
+    },
+    {
+      "id": "starberry_b2209ddc02",
+      "speaker": "starberry",
+      "text": "碧琪，你一定不能说出去。"
+    },
+    {
+      "id": "starberry_b4836a103c",
+      "speaker": "starberry",
+      "text": "因为还没到时候。"
+    },
+    {
+      "id": "starberry_ba901b629e",
+      "speaker": "starberry",
+      "text": "你，马上就知道了。"
+    },
+    {
+      "id": "starberry_cb396e6095",
+      "speaker": "starberry",
+      "text": "……她来了。"
+    },
+    {
+      "id": "starberry_d1c8421f0a",
+      "speaker": "starberry",
+      "text": "秘密。"
+    },
+    {
+      "id": "starberry_d1d16ac1d9",
+      "speaker": "starberry",
+      "text": "希望她喜欢……"
+    },
+    {
+      "id": "starberry_d28f7b486a",
+      "speaker": "starberry",
+      "text": "谢谢你，苹果嘉儿。"
+    },
+    {
+      "id": "starberry_df9bf1f77e",
+      "speaker": "starberry",
+      "text": "唔……还差一点时间。"
+    },
+    {
+      "id": "starberry_e0c67a2f4a",
+      "speaker": "starberry",
+      "text": "还差一点点……就能准备好了。"
+    },
+    {
+      "id": "starberry_e2948fddb8",
+      "speaker": "starberry",
+      "text": "认识她这么久……其实有好多话，一直没有认真说过。"
+    },
+    {
+      "id": "starberry_f4fdee2fae",
+      "speaker": "starberry",
+      "text": "这个颜色，应该很适合。"
+    },
+    {
+      "id": "starberry_fe1a282dcc",
+      "speaker": "starberry",
+      "text": "还不到时候……先把东西找齐吧。"
+    },
+    {
+      "id": "twilight_1aa4de1c6f",
+      "speaker": "twilight",
+      "text": "花园的花、苹果园的甜点、还有晚上那间小屋……顺序都对得上。"
+    },
+    {
+      "id": "twilight_362f3ef54a",
+      "speaker": "twilight",
+      "text": "灯串我按图纸算过长度了，刚好绕一圈；桌布也带来了。"
+    },
+    {
+      "id": "twilight_38e490a00b",
+      "speaker": "twilight",
+      "text": "碧琪。"
+    },
+    {
+      "id": "twilight_586800a79d",
+      "speaker": "twilight",
+      "text": "嗯……这个嘛……"
+    },
+    {
+      "id": "twilight_61273315d8",
+      "speaker": "twilight",
+      "text": "先找个稳妥的地方放好。"
+    },
+    {
+      "id": "twilight_63d1216036",
+      "speaker": "twilight",
+      "text": "（紫悦笑了一下，把那张时间表折好收进鞍包。）"
+    },
+    {
+      "id": "twilight_66bdd2fdfa",
+      "speaker": "twilight",
+      "text": "星莓，你来了。"
+    },
+    {
+      "id": "twilight_68f90bd4b1",
+      "speaker": "twilight",
+      "text": "星莓，我核对过时间表了。"
+    },
+    {
+      "id": "twilight_93d9e2b970",
+      "speaker": "twilight",
+      "text": "按照计划，一切顺利。"
+    },
+    {
+      "id": "twilight_a62cfe94a1",
+      "speaker": "twilight",
+      "text": "（气声）都听好。门一开，我数三下。"
+    },
+    {
+      "id": "twilight_b6328877b3",
+      "speaker": "twilight",
+      "text": "（紫悦笑着，用魔法轻轻消失了。）"
+    },
+    {
+      "id": "twilight_cd1a6603af",
+      "speaker": "twilight",
+      "text": "交给你布置——你比我更清楚哪里好看。"
+    },
+    {
+      "id": "twilight_d0bbe90ad9",
+      "speaker": "twilight",
+      "text": "至于包装要用的小东西——彩带、星星、包装纸、挂件，一样都不能少。"
+    },
+    {
+      "id": "twilight_da3626a6b8",
+      "speaker": "twilight",
+      "text": "准备好了！"
+    },
+    {
+      "id": "twilight_e6d57cc3c4",
+      "speaker": "twilight",
+      "text": "放心。这个计划只有我们几个知道。"
+    }
+  ]
+}

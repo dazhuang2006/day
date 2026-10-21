@@ -1,0 +1,102 @@
+# 《星莓的一天》nginx 配置示例
+#
+# 用法：
+#   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/starberry
+#   sudo ln -s /etc/nginx/sites-available/starberry /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# 记得把 server_name 和 root 改成你自己的。
+
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name your-domain.com;          # ← 改成你的域名（或留 IP）
+    root /var/www/starberry;              # ← 改成 dist/ 上传后的目录
+    index index.html;
+
+    charset utf-8;
+
+    # ------------------------------------------------------------------
+    # 关键：资源路径缺失时必须返回 404，**绝不能回落到 index.html**。
+    # 踩过的坑：最初用 try_files $uri /index.html 做回落，结果游戏启动时要加载的
+    # 6 个背景音乐（项目里本就没有，设计上"缺失则退回合成音乐"）被回落成
+    # 200 的 HTML，Phaser 的音频加载器解码失败且永远不标记完成，
+    # BootScene 一直停在 LOADING，整个游戏白屏。
+    # ------------------------------------------------------------------
+
+    # ---------- 结尾视频 ----------
+    # 大文件必须支持分段请求，否则拖进度条会失效、Safari 有时直接不播。
+    location /assets/video/ {
+        try_files $uri =404;
+        add_header Accept-Ranges bytes;
+        add_header Cache-Control "public, max-age=2592000";
+        # 可选：限制单个连接的带宽
+        # limit_rate 2m;
+    }
+
+    # ---------- 配音 ----------
+    # 102 个小 mp3，文件名带内容哈希，可以长缓存。
+    location /assets/audio/voice/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=2592000";
+    }
+
+    # 但索引文件不能缓存：补了新配音后客户端要能立刻看到
+    location = /assets/audio/voice/index.json {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+
+    # ---------- 背景音乐 ----------
+    location /assets/audio/ {
+        try_files $uri =404;
+        add_header Accept-Ranges bytes;
+        add_header Cache-Control "public, max-age=604800";
+    }
+
+    # ---------- 打包产物 ----------
+    # Vite 输出的 js/css 文件名带哈希，可以永久缓存
+    location /assets/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # index.html 不缓存，保证更新后能立刻拿到新版本
+    location = /index.html {
+        add_header Cache-Control "no-cache, must-revalidate";
+    }
+
+    # ---------- 压缩 ----------
+    # js/css/json 压缩后通常能省 60% 以上
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/javascript
+        application/javascript
+        application/json
+        application/xml
+        image/svg+xml;
+
+    # ---------- 路由 ----------
+    # 这是纯静态单页游戏，没有前端路由，找不到就老实返回 404。
+    # （不要回落到 index.html —— 那会让缺失的资源伪装成 200 的 HTML，见上面的说明）
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # ---------- 可选：加密码保护 ----------
+    # 生日礼物不想被陌生人翻到的话，取消下面注释并生成密码文件：
+    #   sudo apt install apache2-utils
+    #   sudo htpasswd -c /etc/nginx/.htpasswd guest
+    # auth_basic "Private";
+    # auth_basic_user_file /etc/nginx/.htpasswd;
+
+    # ---------- 可选：日志 ----------
+    # access_log /var/log/nginx/starberry.access.log;
+    # error_log  /var/log/nginx/starberry.error.log;
+}

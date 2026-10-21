@@ -1,0 +1,32 @@
+# ===== 依赖与构建产物 =====
+node_modules/
+dist/
+
+# ===== 大文件：绝不进 Git =====
+# 结尾视频 177 MB，GitHub 单文件上限 100 MB，放服务器上即可。
+# 服务器上把它放在 assets/video/finale.mp4（不进版本控制，构建时会自动复制进 dist）
+assets/video/*.mp4
+assets/video/**/*.mp4
+
+# ===== 中间产物（体积大且可重新生成）=====
+# refs/ 里是人声轨、转写、备份等，850 MB
+refs/
+# 角色片段与合成视频，95 MB
+character_clips_v2/
+# 用户录制的原始配音（已导入 assets/audio/voice）
+applejack_voice/
+# 从剧集切出来的零散音频片段
+clips/
+
+# ===== 日志与临时文件 =====
+*.log
+_tmp*
+*.tmp
+*.bak
+
+# ===== 系统 / 编辑器 =====
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

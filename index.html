@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星莓的一天 · 今天好像有点不一样</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="game-wrap"></div>
+      <div id="boot-hint">正在点亮小屋……</div>
+      <!-- 全屏：浏览器要求必须由用户操作触发，所以做成按钮；也可按 F11 -->
+      <button id="fs-btn" type="button" title="全屏（F11）" aria-label="切换全屏">⛶</button>
+      <!-- 竖屏提示：只在"触摸设备 + 竖屏"时显示，转成横屏会自动消失 -->
+      <div id="rotate-hint">
+        <div class="rotate-card">
+          <div class="rotate-icon">▭</div>
+          <p>把手机横过来玩会更舒服</p>
+          <p class="rotate-sub">这个游戏是宽屏画面，横屏之后字和画面都会大很多</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

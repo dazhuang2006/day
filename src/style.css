@@ -1,0 +1,255 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-1: #f6e9ff;
+  --bg-2: #ffedf3;
+  --bg-3: #eaf6ff;
+  --ink: #7a4bb0;
+  --shadow: rgba(120, 90, 160, 0.25);
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  background-attachment: fixed;
+  font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  overflow: auto;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px;
+}
+
+#game-wrap {
+  width: 100%;
+  max-width: 1120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#game-wrap canvas {
+  display: block;
+  margin: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 76px);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px var(--shadow);
+  background: #fdf3ff;
+  image-rendering: auto;
+}
+
+#boot-hint {
+  color: #a58cc7;
+  font-size: 14px;
+  letter-spacing: 3px;
+  opacity: 0.9;
+  pointer-events: none;
+  text-align: center;
+  transition: opacity 240ms ease;
+}
+
+/* 全屏按钮：固定在右上角，不抢画面又不难找 */
+#fs-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 20;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(160, 130, 200, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(4px);
+  color: #7a4bb0;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 160ms ease, transform 160ms ease, opacity 160ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#fs-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: scale(1.06);
+}
+
+#fs-btn:active {
+  transform: scale(0.96);
+}
+
+#fs-btn:focus-visible {
+  outline: 2px solid #c9458f;
+  outline-offset: 2px;
+}
+
+/* ---------- 全屏 ----------
+   踩过的坑（两个叠在一起，所以第一版没修好）：
+   1) #app 是 flex 纵向布局，里面还有 #boot-hint / #fs-btn / #rotate-hint。
+      flex 子项在空间不够时会被压扁，于是 #game-wrap 高度被压成 0；
+      Phaser 按"容器高 0"算 FIT，把画布中心对齐到容器中线，画布就跑到屏幕外或压在顶部。
+   2) 只写 height:100% 不够，它同时受 max-height 与 flex 压缩影响。
+   修法：全屏时把 #game-wrap 以外的子项藏掉，并让 #game-wrap 用 flex:1 吃掉全部空间。
+   --game-w / --game-h 由 main.ts 按游戏逻辑尺寸写入。 */
+#app:fullscreen,
+#app:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  padding: 0;
+  gap: 0;
+  justify-content: center;
+}
+
+/* 隐藏全屏时不需要的元素，别让它们参与 flex 分配把画面挤扁 */
+#app:fullscreen > #boot-hint,
+#app:fullscreen > #rotate-hint,
+#app:-webkit-full-screen > #boot-hint,
+#app:-webkit-full-screen > #rotate-hint {
+  display: none;
+}
+
+#app:fullscreen > #game-wrap,
+#app:-webkit-full-screen > #game-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+#app:fullscreen #game-wrap canvas,
+#app:-webkit-full-screen #game-wrap canvas {
+  border-radius: 0;
+  box-shadow: none;
+  max-width: var(--game-w, 100vw);
+  max-height: var(--game-h, 100dvh);
+}
+
+/* 浏览器原生全屏（F11）时走同一套规则 */
+:fullscreen #game-wrap,
+:-webkit-full-screen #game-wrap {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+:fullscreen #game-wrap canvas,
+:-webkit-full-screen #game-wrap canvas {
+  border-radius: 0;
+  box-shadow: none;
+  max-width: var(--game-w, 100vw);
+  max-height: var(--game-h, 100dvh);
+}
+
+/* 全屏时把按钮调亮一点，提示可以点它退出 */
+#fs-btn[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+/* 全屏时上下/左右可能留一圈窄边（画面是 16:9，显示器比例不一定相同）。
+   给这圈边一个深紫底色，和游戏夜空呼应，比默认的纯黑自然。 */
+#game-wrap:fullscreen,
+#game-wrap:-webkit-full-screen {
+  background: #2b1b3d;
+}
+
+/* 竖屏提示：默认隐藏，只在"触摸设备 + 竖屏"时出现，转横屏自动消失 */
+#rotate-hint {
+  display: none;
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  #rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(160deg, #f6e9ff 0%, #ffedf3 45%, #eaf6ff 100%);
+    text-align: center;
+  }
+}
+
+.rotate-card {
+  max-width: 320px;
+}
+
+.rotate-icon {
+  font-size: 56px;
+  line-height: 1;
+  color: #b98bff;
+  transform: rotate(90deg);
+  margin-bottom: 18px;
+}
+
+.rotate-card p {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.rotate-card .rotate-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: #a58cc7;
+  line-height: 1.6;
+}
+
+/* 触屏设备：缩小圆角与阴影，把纵向空间尽量留给画面 */
+@media (max-width: 720px) {
+  #app {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  #game-wrap canvas {
+    border-radius: 10px;
+    max-height: calc(100dvh - 40px);
+  }
+
+  #boot-hint {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+}
+
+/* 系统开启"减少动态效果"时弱化阴影 */
+@media (prefers-reduced-motion: reduce) {
+  #game-wrap canvas {
+    box-shadow: 0 8px 24px var(--shadow);
+  }
+}

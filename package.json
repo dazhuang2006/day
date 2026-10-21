@@ -1,0 +1,20 @@
+{
+  "name": "starberry-day",
+  "version": "1.0.0",
+  "description": "《星莓的一天》—— 为一个特别的人准备的生日小游戏",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && node tools/copy-assets.mjs",
+    "preview": "vite preview",
+    "share": "npm run build && vite preview",
+    "tunnel": "ngrok http 4173"
+  },
+  "dependencies": {
+    "phaser": "^3.87.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vite": "^6.0.0"
+  }
+}

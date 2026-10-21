@@ -1,0 +1,77 @@
+{
+  "_说明": [
+    "每位角色一条参考音频（GPT-SoVITS 是零样本克隆，不需要训练）。",
+    "把音频文件放进 refs/ 目录，然后填 ref_audio（相对本文件的路径）和 ref_text。",
+    "ref_text 必须是参考音频里逐字对应的文本，一个字都不能差——这是克隆质量的关键。",
+    "参考音频要求：5~10 秒、干净人声、无背景音乐、无混响、无他人说话；",
+    "            格式支持 wav/mp3/flac，首选 44.1kHz 单声道或立体声 wav。",
+    "ref_lang / target_lang 一般保持「中文」；如果参考是日语或英语再改。",
+    "speed 是语速倍率，1 为原速，1.1 稍快。"
+  ],
+  "speakers": {
+    "starberry": {
+      "display": "星莓（主角）",
+      "line_count": 38,
+      "ref_audio": "refs/download/SSB1125__SSB11250254.wav",
+      "ref_text": "要求赔偿其精神抚慰金两万元并免除餐费一万一千六百九十六元",
+      "_source": "AISHELL-3 SSB1125（B 段 / 女 / 南方口音 / Apache-2.0）7.16s",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "twilight": {
+      "display": "紫悦",
+      "line_count": 15,
+      "ref_audio": "refs/twilight.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "fluttershy": {
+      "display": "柔柔",
+      "line_count": 11,
+      "ref_audio": "refs/fluttershy.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "applejack": {
+      "display": "苹果嘉儿",
+      "line_count": 19,
+      "ref_audio": "refs/applejack.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "rainbow": {
+      "display": "云宝",
+      "line_count": 8,
+      "ref_audio": "refs/rainbow.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "rarity": {
+      "display": "珍奇",
+      "line_count": 13,
+      "ref_audio": "refs/rarity.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    },
+    "pinkie": {
+      "display": "碧琪",
+      "line_count": 12,
+      "ref_audio": "refs/pinkie.wav",
+      "ref_text": "",
+      "ref_lang": "中文",
+      "target_lang": "中文",
+      "speed": 1
+    }
+  }
+}
