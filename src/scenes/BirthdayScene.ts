@@ -7,7 +7,7 @@ import { fadeIn } from '../sceneUtils'
 import { saveGame } from '../persistence'
 import { state } from '../config'
 import { FINALE_VIDEO } from '../config'
-import { playFinaleVideo } from '../video'
+import { playFinaleVideo, preloadFinaleVideo } from '../video'
 
 // 隐藏彩蛋台词（十六节）
 const EASTER: Record<string, string[]> = {
@@ -49,6 +49,11 @@ export class BirthdayScene extends Phaser.Scene {
 
   private async runFinale() {
     await this.ending()
+    // 读信要花几十秒，正好用来提前缓冲结尾视频，点按钮时才不会一上来就卡。
+    // 必须在 showLetter 之前调用（信一出现就开始下载）。
+    if (FINALE_VIDEO.src && !(FINALE_VIDEO.mode === 'wait' && state.finaleVideoSeen)) {
+      preloadFinaleVideo(FINALE_VIDEO.src)
+    }
     await this.showLetter()
     // 信读完之后放收尾视频（文件缺失会自动跳过，不影响流程）
     const played = await this.playFinale()

@@ -342,24 +342,64 @@ Disallow: /
 
 ---
 
-## 7. 替换结尾视频（可选，能省很多流量）
+## 7. 结尾视频：码率必须低于服务器带宽
 
-原始视频 177 MB、码率 11 Mbps，手机上加载会很久。`refs/_web_video/` 里已备好三档：
+**这是最容易忽略、也最影响体验的一点。**
 
-| 文件 | 体积 | SSIM | 建议 |
-|---|---|---|---|
-| `A_1080p.mp4` | 100.7 MB | 0.961 | 画质最好，体积仍偏大 |
-| `B_720p.mp4` | 43.7 MB | 0.933 | **推荐**，体积画质平衡 |
-| `C_720p_small.mp4` | 25.6 MB | 0.925 | 手机流量友好 |
+视频能否流畅播放，取决于**码率 vs 实际带宽**，不是文件大小。实测这台服务器的
+公网带宽只有约 **3.3 Mbps**，而原始视频码率 **11.3 Mbps** —— 是带宽的 3 倍多，
+播放器只能播一下等一下，就是"卡卡的"。
 
-换法（换成 B 为例）：
+先测带宽（在本地执行，数字换成你的地址）：
+
+```powershell
+$ip='<你的IP>'
+$req=[System.Net.HttpWebRequest]::Create("http://$ip/assets/index.js")
+$req.AddRange(0, 4194303)   # 取 4MB
+$sw=[System.Diagnostics.Stopwatch]::StartNew()
+$r=$req.GetResponse(); $ms=New-Object System.IO.MemoryStream
+$r.GetResponseStream().CopyTo($ms); $sw.Stop()
+"Mbps = {0:N1}" -f ($ms.Length*8/1e6/$sw.Elapsed.TotalSeconds)
+```
+
+**视频码率要压到带宽的 50~60% 以下**，留出余量应对波动。
+
+`refs/_web_video/` 里备好的版本：
+
+| 文件 | 分辨率 | 码率 | 体积 | 占 3.3Mbps 带宽 | 说明 |
+|---|---|---|---|---|---|
+| `原片_1080p.mp4` | 1080p | 11.3 Mbps | 177 MB | 343% | ❌ 必然卡 |
+| `A_1080p.mp4` | 1080p | 6.4 Mbps | 100.7 MB | 194% | ❌ 仍卡 |
+| `B_720p.mp4` | 720p | 2.7 Mbps | 43.7 MB | 82% | ⚠ 偏紧 |
+| `D_720p.mp4` | 720p | 1.77 Mbps | 28.9 MB | **54%** | ✅ **当前在用** |
+| `C_720p_small.mp4` | 720p | 1.56 Mbps | 25.6 MB | 47% | ✅ 更省 |
+| `E_540p.mp4` | 540p | 1.18 Mbps | 19.7 MB | 36% | ✅ 带宽很低时用 |
+
+换法：
 
 ```bash
-cp refs/_web_video/B_720p.mp4 assets/video/finale.mp4
+cp refs/_web_video/D_720p.mp4 assets/video/finale.mp4
 npm run build
 ```
 
 帧率、音轨（AAC）、`faststart`（可边下边播）都已处理好，直接换文件名即可。
+
+重新压一版的命令（改 `-maxrate` 即可控制上限）：
+
+```bash
+ffmpeg -i 原片.mp4 -vf "scale=1280:720:flags=lanczos" \
+  -c:v h264_nvenc -preset medium -rc vbr -cq 29 -b:v 0 -maxrate 2200k -bufsize 4400k \
+  -pix_fmt yuv420p -c:a aac -b:a 96k -movflags +faststart finale.mp4
+```
+
+> 没有 NVIDIA 显卡就把 `h264_nvenc -preset medium -rc vbr -cq 29` 换成
+> `libx264 -preset slow -crf 23`。
+
+### 播放器这边也做了优化
+
+- **读信时就开始预加载**（`preloadFinaleVideo()`），点按钮时往往已经缓冲好了
+- 缓冲期间显示「缓冲中…」提示，不会让人以为卡死
+- 视频元素复用同一个 `<video>`，避免重新建元素导致重新请求
 
 ---
 
