@@ -220,9 +220,19 @@ class AudioManager {
     return this.ctx
   }
 
+  /**
+   * 外部可调用：确保我们自己的 AudioContext 处于 running。
+   * 全屏切换、切回前台时用得上（部分手机会把上下文挂起）。
+   */
+  resumeIfSuspended() {
+    const c = this.ctx
+    if (!c) return
+    const state = c.state as string
+    if (state === 'suspended' || state === 'interrupted') c.resume().catch(() => {})
+  }
+
   /** 浏览器自动播放策略：首次用户操作时恢复音频上下文 */
-  resumeOnGesture() {
-    const unlock = () => {
+  resumeOnGesture() {    const unlock = () => {
       const c = this.ensureCtx()
       if (!c) return
       if (c.state === 'suspended') c.resume().catch(() => {})

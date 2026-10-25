@@ -47,6 +47,24 @@ const game = new Phaser.Game({
   ]
 })
 
+// 手机进入全屏时浏览器会触发 blur，而 Phaser 默认在失焦时 suspend 它自己的
+// AudioContext —— 人物配音（走 Phaser 音源）就会没声音；背景垫音走的是我们
+// 自己建的 AudioContext，不受影响，于是表现为"有背景音、没人声"。
+// 关掉这个自动暂停，并在全屏切换时主动恢复上下文。
+game.sound.pauseOnBlur = false
+
+/** 全屏切换后确保音频上下文是 running（部分手机浏览器会顺手把上下文挂起） */
+function resumeAudioSoon() {
+  window.setTimeout(() => {
+    const sm = game.sound as unknown as { context?: AudioContext }
+    const ctx = sm.context
+    if (ctx && (ctx.state === 'suspended' || (ctx.state as string) === 'interrupted')) {
+      ctx.resume().catch(() => {})
+    }
+    audioManager.resumeIfSuspended()
+  }, 120)
+}
+
 // 配音索引：列出 assets/audio/voice 下真实存在的 mp3。
 // 只是个 json，通常在玩家点进游戏前就回来了；万一没赶上，
 // 那几句会短暂没有声音（下次进入该场景即正常），不会卡住或报错。
@@ -94,6 +112,7 @@ function syncFsIcon() {
   fsBtn.setAttribute('aria-label', on ? '退出全屏' : '切换全屏')
   fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false')
   refreshScaleSoon()
+  resumeAudioSoon()
 }
 
 if (fsBtn) {
