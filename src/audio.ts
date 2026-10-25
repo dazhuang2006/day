@@ -107,30 +107,60 @@ class AudioManager {
   private videoSilent = false
   /** 第一次播放音乐时记住 SoundManager，视频期间用它做兜底静音 */
   private soundManager: Phaser.Sound.BaseSoundManager | null = null
+  /** 最近一次播放音乐的场景：视频结束后重播要用 */
+  private lastScene: Phaser.Scene | null = null
+  /** 视频期间被暂停的曲目，结束后恢复 */
+  private resumeMusicAfterVideo: MusicName | null = null
 
   setVideoSilence(on: boolean) {
     this.videoSilent = on
-    if (on) this.stopAll()
-    if (this.soundManager) {
-      try {
-        this.soundManager.mute = on
-      } catch {
-        /* ignore */
-      }
-      if (on) {
-        // 光 mute 不够稳：这个循环 bgm 是 HTML5AudioSound（没有 gainNode），
-        // 实测 stop() 之后它仍留在 getAllPlaying 里。用管理器级别的 stopAll()
-        // 把每一个音源都真正停掉，才是可靠的。
+    if (on) {
+      // 记住当前曲目，视频结束后要接着放
+      this.resumeMusicAfterVideo = this.currentMusicName
+      // 语音不用恢复，直接停掉（否则 resumeAll 会把半句话接回来）
+      this.stopVoice()
+      if (this.soundManager) {
         try {
-          this.soundManager.stopAll()
+          this.soundManager.mute = true
+        } catch {
+          /* ignore */
+        }
+        // 用 pause 而不是 stop：保住播放位置，视频结束后接着放
+        try {
+          this.soundManager.pauseAll()
         } catch {
           /* ignore */
         }
       }
+      // 合成垫音不归 Phaser 管，单独停
+      this.stopAmbient(0.2)
+      this.applyVolume()
+      return
     }
-    // 注意：这里必须无条件调用。之前放在 else 分支里，
-    // 开启静音时总线音量不会更新，残留的 0.7 会让音乐继续响。
+
+    if (this.soundManager) {
+      try {
+        this.soundManager.mute = false
+      } catch {
+        /* ignore */
+      }
+      try {
+        this.soundManager.resumeAll()
+      } catch {
+        /* ignore */
+      }
+    }
     this.applyVolume()
+
+    // 兜底：如果那个音源其实是被 stop 掉的（pause 没生效），就重新播一遍
+    const name = this.resumeMusicAfterVideo
+    this.resumeMusicAfterVideo = null
+    if (!name) return
+    if (this.currentPad === name) {
+      this.playAmbient(name)
+    } else if (!this.isPlayingMusic(name) && this.lastScene) {
+      this.playMusic(this.lastScene, name)
+    }
   }
 
   get isVideoSilent() {
@@ -339,6 +369,7 @@ class AudioManager {
   playMusic(scene: Phaser.Scene, name: MusicName) {
     // 记住 SoundManager：视频播放时要靠它把所有 Phaser 音源硬静音
     this.soundManager = scene.sound
+    this.lastScene = scene
     const ctx = this.ensureCtx()
     if (ctx) {
       this.ensureBuses(ctx)

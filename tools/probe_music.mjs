@@ -99,6 +99,13 @@ try {
     console.log(`视频中 +${ms}ms:`, JSON.stringify(await ev(send, STATE)))
   }
 
+  // 跳过视频 -> onEnd -> 音乐应该回来
+  await ev(send, `document.querySelector('#finale-video button')?.click()`)
+  await sleep(1500)
+  console.log('结束后 +1.5s:', JSON.stringify(await ev(send, STATE)))
+  await sleep(1500)
+  console.log('结束后 +3.0s:', JSON.stringify(await ev(send, STATE)))
+
   console.log('\n控制台（最后 8 条）:')
   for (const l of logs.slice(-8)) console.log('  ' + l.slice(0, 150))
 } finally {
