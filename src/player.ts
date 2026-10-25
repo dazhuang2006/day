@@ -48,11 +48,15 @@ export class Player {
   /** 自动交互的冷却，避免同一次行走连续触发 */
   private autoCooldown = 900
   /**
-   * 自动交互是否"上膛"。
-   * 一次靠近只触发一次：触发后置 false，必须离开所有交互点（best < 0）才复位。
-   * 否则站在朋友旁边，对话一结束冷却到期就会把同一段对话再放一遍。
+   * 上一次自动触发过的目标。
+   *
+   * 为什么要按"目标"而不是全局开关来记：
+   *   全局开关会导致——给朋友打完招呼后，人还站在原处，
+   *   这时挪到旁边摆件的光圈里也不会触发，必须走远再回来（用户体验很差）。
+   * 现在的规则：同一个目标不重复触发，换一个目标立刻可用；
+   * 离开该目标范围（最近目标变了）就清空，下次靠近还能再触发。
    */
-  private autoArmed = true
+  private lastAutoTarget: InteractTarget | null = null
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     this.scene = scene
@@ -341,16 +345,18 @@ export class Player {
       this.nearIndex = best
       this.onNearChange?.(best)
     }
-    // 离开所有交互点之后重新"上膛"：一次靠近只自动触发一次。
-    // 否则对话结束时人还站在原地，冷却一到就会把同一段对话再放一遍。
-    if (best < 0) this.autoArmed = true
+    // 最近的目标不再是我上次触发过的那个 -> 说明离开了它（或换到另一个），
+    // 清掉记录，这样回到它身边时还能再次触发。
+    if (best < 0) {
+      this.lastAutoTarget = null
+    } else if (this.targets[best] !== this.lastAutoTarget) {
+      this.lastAutoTarget = null
+    }
   }
 
   /** 走到就交互：手机端完全不需要按键 */
   private tryAutoInteract() {
     if (!this.targets.length || this.freezeMs > 0) return
-    // 一次靠近只触发一次：必须离开交互范围才会重新触发
-    if (!this.autoArmed) return
     const now = this.scene.time.now
     if (now - this.lastAutoInteract < this.autoCooldown) return
 
@@ -364,9 +370,12 @@ export class Player {
     }
     if (!best) return
 
+    // 同一个目标不重复触发（站着不动不会把对话反复放一遍）；
+    // 但换成别的目标（比如从朋友挪到旁边的摆件光圈）要立刻能用。
+    if (best.t === this.lastAutoTarget) return
+
     this.lastAutoInteract = now
-    // 触发后立刻"退膛"，防止对话结束时站在原地又触发一次
-    this.autoArmed = false
+    this.lastAutoTarget = best.t
     // 站定后再触发，避免刚走到就弹出对话导致手感突兀
     const t = best.t
     try {
