@@ -78,6 +78,15 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
       window.clearInterval(watchdog)
       window.clearTimeout(skipTimer)
       window.clearTimeout(retryTimer)
+      // Blob 播放用的临时 URL 要释放，否则整份视频会一直占着内存
+      if (blobUrl) {
+        try {
+          URL.revokeObjectURL(blobUrl)
+        } catch {
+          /* ignore */
+        }
+        blobUrl = ''
+      }
       if (el) {
         el.removeEventListener('ended', onEnded)
         el.removeEventListener('error', onError)
@@ -214,9 +223,47 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
     // "看到一半被踢回游戏"。改成保留画面、显示提示、自动重连。
     // 只有"从头到尾一帧都没播出来"（文件缺失/解码不了）才真正跳过。
     let recoveries = 0
+    let blobTried = false
+    let blobUrl = ''
+
+    /**
+     * 最后手段：绕过浏览器的 HTTP 缓存，整份下载后用 Blob 播放。
+     * 手机上常见"每次都停在同一秒"其实是缓存里躺着一份坏副本，
+     * 这条路径能彻底绕开缓存与流式分段的坑（代价是要等下载完）。
+     */
+    const playFromBlob = async (at: number) => {
+      if (blobTried) return false
+      blobTried = true
+      buffering.textContent = '正在完整下载视频…'
+      buffering.style.display = 'block'
+      try {
+        const res = await fetch(src, { cache: 'reload' })
+        if (!res.ok) return false
+        const blob = await res.blob()
+        if (blob.size < 1024) return false
+        if (blobUrl) URL.revokeObjectURL(blobUrl)
+        blobUrl = URL.createObjectURL(blob)
+        el.src = blobUrl
+        el.currentTime = at
+        await el.play()
+        buffering.textContent = '缓冲中…'
+        return true
+      } catch (e) {
+        console.warn('[finale-video] 整份下载失败', e)
+        return false
+      }
+    }
+
     const recover = () => {
       const at = el.currentTime
       recoveries++
+      // 同一位置连续失败多次 -> 说明不是网络抖动，换整份下载
+      if (recoveries > 3 && !blobTried) {
+        void playFromBlob(at).then((ok) => {
+          if (!ok) recover()
+        })
+        return
+      }
       const delay = Math.min(4000, 600 * recoveries)
       buffering.textContent = '网络有点慢，正在重连…'
       buffering.style.display = 'block'
