@@ -479,16 +479,48 @@ class AudioManager {
   private voiceLoading = new Set<string>()
 
   /**
+   * 正在等解码完成后补播的那一句。
+   *
+   * 为什么需要：mp3 要 fetch + decode，玩家刚进章节就搭话时音频往往还没好，
+   * 以前这里直接返回 false —— 这句就永远静音了（表现为"某个角色没声音"，
+   * 而且往往是第一个被搭话的人）。现在改成排队，解码完成立刻补播。
+   */
+  private pendingVoice: { scene: Phaser.Scene; key: string; volume: number } | null = null
+
+  /** 真正把已缓存的配音播出来 */
+  private playVoiceSound(scene: Phaser.Scene, key: string, volume: number) {
+    try {
+      if (this.voiceSound) this.voiceSound.stop()
+      // 音量走 Phaser 自己的通道：音乐已经占了 musicBus，人声独立放更简单
+      const snd = scene.sound.add(key, { volume: Math.max(0, Math.min(1, volume * this.prefs.volume)) })
+      snd.once('complete', () => snd.destroy())
+      snd.play()
+      this.voiceSound = snd
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  /**
    * 把配音 mp3 预加载进 Phaser 的音频缓存。
-   * 已缓存或加载中都直接返回 true。
+   * 已缓存直接返回 true；正在加载返回 false（调用方会排队补播）。
    */
   private ensureVoiceLoaded(scene: Phaser.Scene, key: string) {
     if (scene.cache.audio.exists(key)) return true
     if (this.voiceLoading.has(key)) return false
     this.voiceLoading.add(key)
     scene.load.audio(key, `assets/audio/voice/${key}.mp3`)
-    scene.load.once(`filecomplete-audio-${key}`, () => this.voiceLoading.delete(key))
-    scene.load.once(`loaderror`, () => this.voiceLoading.delete(key))
+    scene.load.once(`filecomplete-audio-${key}`, () => {
+      this.voiceLoading.delete(key)
+      // 如果这句还在等（玩家没有立刻翻页），解码完立刻补播
+      const p = this.pendingVoice
+      if (p && p.key === key) {
+        this.pendingVoice = null
+        this.playVoiceSound(p.scene, key, p.volume)
+      }
+    })
+    scene.load.once('loaderror', () => this.voiceLoading.delete(key))
     scene.load.start()
     return false
   }
@@ -509,23 +541,20 @@ class AudioManager {
     if (this.prefs.muted) return true
 
     const key = `${speaker}/${this.voiceIdOf(speaker, text)}`
-    if (!this.ensureVoiceLoaded(scene, key)) return false
-
-    try {
-      if (this.voiceSound) this.voiceSound.stop()
-      // 音量走 Phaser 自己的通道：音乐已经占了 musicBus，人声独立放更简单
-      const snd = scene.sound.add(key, { volume: Math.max(0, Math.min(1, volume * this.prefs.volume)) })
-      snd.once('complete', () => snd.destroy())
-      snd.play()
-      this.voiceSound = snd
-      return true
-    } catch {
+    if (!this.ensureVoiceLoaded(scene, key)) {
+      // 还在解码：记下来，加载完成后补播（换台词时会被覆盖，不会串音）
+      this.pendingVoice = { scene, key, volume }
       return false
     }
+
+    this.pendingVoice = null
+    return this.playVoiceSound(scene, key, volume)
   }
 
   /** 掐掉正在播的那句配音（跳过对话、或对话结束时调用） */
   stopVoice() {
+    // 取消"等加载完成再补播"的排队，避免翻页后突然冒出一句
+    this.pendingVoice = null
     if (!this.voiceSound) return
     try {
       this.voiceSound.stop()
