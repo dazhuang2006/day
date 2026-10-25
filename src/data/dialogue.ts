@@ -106,7 +106,9 @@ export const rarityWrap: Line[] = [
   { who: 'starberry', text: '你觉得她会喜欢吗？' },
   { who: 'rarity', text: '亲爱的，这是秘密。' },
   { who: 'rarity', text: '有些惊喜，如果提前知道了，就不能叫惊喜了。' },
-  { who: 'rarity', text: '（说完，珍奇优雅地转身走开。）' },
+  // 这句是旁白动作，不是珍奇说的话；写成 who:'rarity' 会让对话框显示
+  //「珍奇：（说完，珍奇优雅地转身走开。）」，还会被算进要配音的台词里。
+  { text: '（说完，珍奇优雅地转身走开。）' },
   { text: '……她到底在给谁准备？' }
 ]
 

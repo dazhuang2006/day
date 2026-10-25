@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-10-07T13:10:33.448Z",
+  "generatedAt": "2026-10-25T02:44:43.356Z",
   "note": "由 tools/extract-lines.mjs 自动生成；id = speaker + 文本哈希，台词不变则 id 不变",
   "counts": {
-    "total": 116,
+    "total": 115,
     "bySpeaker": {
       "applejack": 19,
       "fluttershy": 11,
       "pinkie": 12,
       "rainbow": 8,
-      "rarity": 13,
+      "rarity": 12,
       "starberry": 38,
       "twilight": 15
     },
@@ -289,11 +289,6 @@
       "id": "rarity_44c8e43d6b",
       "speaker": "rarity",
       "text": "亲爱的，这是秘密。"
-    },
-    {
-      "id": "rarity_501e782c80",
-      "speaker": "rarity",
-      "text": "（说完，珍奇优雅地转身走开。）"
     },
     {
       "id": "rarity_5bb768e50c",
