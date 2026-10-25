@@ -74,6 +74,8 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
         /* ignore */
       }
       // 清掉所有挂载的监听与 DOM，避免残留
+      disposed = true
+      window.clearInterval(watchdog)
       window.clearTimeout(skipTimer)
       window.clearTimeout(retryTimer)
       if (el) {
@@ -253,6 +255,90 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
     // 长时间卡住（不是报错）也要有提示
     const onStalled = () => {
       buffering.style.display = 'block'
+    }
+
+    // ---- 卡死看门狗 ----
+    // 有些手机解码器会"静默卡住"：不报错、也不推进 currentTime，画面就停住了。
+    // 这里每秒检查一次，连续卡住就依次尝试：继续播 -> 轻推一下 -> 重载并跳回原位置。
+    let lastT = -1
+    let stuck = 0
+    let disposed = false
+    const watchdog = window.setInterval(() => {
+      if (disposed || settled) return
+      const t = el.currentTime
+      if (!el.paused && Math.abs(t - lastT) < 0.01) {
+        stuck++
+        buffering.style.display = 'block'
+        buffering.textContent = '缓冲中…'
+        if (stuck === 3) {
+          void el.play().catch(() => {})
+        } else if (stuck === 6) {
+          console.warn(`[finale-video] 画面卡在 ${t.toFixed(1)}s，尝试轻推`)
+          try {
+            el.currentTime = Math.min((el.duration || 0) - 0.5, t + 0.2)
+            void el.play().catch(() => {})
+          } catch {
+            /* ignore */
+          }
+        } else if (stuck >= 10) {
+          console.warn(`[finale-video] 仍卡在 ${t.toFixed(1)}s，重载并跳回`)
+          stuck = 0
+          try {
+            el.load()
+            el.currentTime = t
+            void el.play().catch(() => recover())
+          } catch {
+            recover()
+          }
+        }
+      } else {
+        stuck = 0
+        lastT = t
+      }
+      updateDebug(t)
+    }, 1000)
+    window.setTimeout(() => {}, 0)
+
+    // ---- 可选调试信息：URL 带 ?debug=1 才显示 ----
+    const DEBUG = (() => {
+      try {
+        return new URLSearchParams(window.location.search).has('debug')
+      } catch {
+        return false
+      }
+    })()
+    const dbg = document.createElement('div')
+    Object.assign(dbg.style, {
+      position: 'fixed',
+      left: '12px',
+      bottom: '12px',
+      padding: '4px 10px',
+      borderRadius: '8px',
+      background: 'rgba(0,0,0,0.6)',
+      color: '#9fe3ff',
+      fontFamily: 'monospace',
+      fontSize: '12px',
+      whiteSpace: 'pre',
+      pointerEvents: 'none',
+      display: DEBUG ? 'block' : 'none'
+    } satisfies Partial<CSSStyleDeclaration>)
+    wrap.appendChild(dbg)
+    function updateDebug(t: number) {
+      if (!DEBUG) return
+      let buffered = ''
+      try {
+        if (el.buffered.length) {
+          const ranges: string[] = []
+          for (let i = 0; i < el.buffered.length; i++) {
+            ranges.push(`${el.buffered.start(i).toFixed(0)}-${el.buffered.end(i).toFixed(0)}`)
+          }
+          buffered = ranges.join(',')
+        }
+      } catch {
+        /* ignore */
+      }
+      const err = el.error ? `err${el.error.code}` : ''
+      dbg.textContent = `t=${t.toFixed(1)}/${(el.duration || 0).toFixed(0)}s  buf=${buffered || '0'}  paused=${el.paused ? 1 : 0}  rs=${el.readyState} ${err}`
     }
 
     // playing 是主事件；但视频可能在小文件/缓存命中时"瞬间就绪"，
