@@ -475,6 +475,31 @@ class AudioManager {
     return this.voiceIndex[speaker]?.has(lineId) ?? false
   }
 
+  /**
+   * 声音自检：手机上没法看控制台，这里把关键状态一次性吐出来。
+   * 只读，不会改变播放状态。
+   */
+  voiceDiagnostics(scene: Phaser.Scene, speaker: string, text: string) {
+    const id = this.voiceIdOf(speaker, text)
+    const key = `${speaker}/${id}`
+    let cached = false
+    try {
+      cached = !!id && scene.cache.audio.exists(key)
+    } catch {
+      /* ignore */
+    }
+    return {
+      ctx: this.ctx ? this.ctx.state : 'none',
+      total: Object.values(this.voiceIndex).reduce((n, s) => n + s.size, 0),
+      has: this.hasVoiceClip(speaker, text),
+      cached,
+      loading: this.voiceLoading.has(key),
+      playing: !!this.voiceSound,
+      muted: this.prefs.muted,
+      volume: this.prefs.volume
+    }
+  }
+
   /** 正在加载中的配音 key，避免同一句被重复入队 */
   private voiceLoading = new Set<string>()
 

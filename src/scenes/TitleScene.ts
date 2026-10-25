@@ -355,6 +355,35 @@ export class TitleScene extends Phaser.Scene {
       .setDepth(1002)
     objs.push(hint)
 
+    // 声音自检：手机上没法开控制台，点一下把关键状态显示出来（只读诊断，不影响游戏）
+    const selfCheck = this.add
+      .text(cx, cy + ph / 2 - 74, '声音自检 ▸', {
+        fontFamily: 'Microsoft YaHei, PingFang SC, sans-serif',
+        fontSize: '14px',
+        color: '#9fe3ff'
+      })
+      .setOrigin(0.5)
+      .setDepth(1002)
+      .setInteractive({ useHandCursor: true })
+    selfCheck.on('pointerdown', () => {
+      const PROBE = '亲爱的，你终于来了。'
+      const d = audioManager.voiceDiagnostics(this, 'rarity', PROBE)
+      selfCheck.setText(`试播中…`)
+      const ok = audioManager.sayVoiceLine(this, 'rarity', PROBE)
+      this.time.delayedCall(900, () => {
+        const d2 = audioManager.voiceDiagnostics(this, 'rarity', PROBE)
+        hint.setText(
+          `音频:${d.ctx}  解锁:${this.sound.locked ? '否' : '是'}  ` +
+            `配音:${d.total}条  缓存:${d2.cached ? '有' : d2.loading ? '加载中' : '无'}\n` +
+            `试播:${ok ? '已发起' : d.loading ? '等加载' : '失败'}  ` +
+            `在播:${d2.playing ? '是' : '否'}  静音:${d.muted ? '开' : '关'}  音量:${Math.round(d.volume * 100)}%`
+        )
+        hint.setColor('#ffe066')
+        selfCheck.setText('声音自检 ▸')
+      })
+    })
+    objs.push(selfCheck)
+
     const btn = this.add
       .text(cx, cy + ph / 2 - 18, '确定', {
         fontFamily: 'Microsoft YaHei, PingFang SC, sans-serif',
