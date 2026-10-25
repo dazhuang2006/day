@@ -97,21 +97,40 @@ class AudioManager {
   /**
    * 视频播放期间的静音开关。
    *
-   * 为什么不是"压低音量"：Phaser 播的音乐**不走这里的 GainNode 总线**
-   * （它有自己的音量通道），所以调总线音量对它无效——这就是"打开视频时
-   * 音乐还在响"的原因。pause() 对某些音源也不生效。
-   * 最可靠的做法是直接 stopAll()：结尾视频一放，游戏音频就该完全让位，
-   * 而且此时剧情已经结束，不需要恢复。
+   * 为什么单靠 stopAll() 不够：Phaser 播的音乐走它自己的 SoundManager，
+   * 实测 stop() 对已经进入循环的音源不一定生效（调用后 getAllPlaying 里还在），
+   * 而且总音量总线也不会因此归零——所以必须在三个层面同时压住：
+   *   1. stopAll()      —— 停掉我们能拿到的音源对象
+   *   2. soundManager.mute —— 兜底，把所有 Phaser 音源（含循环 bgm）硬静音
+   *   3. applyVolume()  —— 把我们自己的 GainNode 总线（每个 else 分支都算）归零
    */
   private videoSilent = false
+  /** 第一次播放音乐时记住 SoundManager，视频期间用它做兜底静音 */
+  private soundManager: Phaser.Sound.BaseSoundManager | null = null
 
   setVideoSilence(on: boolean) {
     this.videoSilent = on
-    if (on) {
-      this.stopAll()
-    } else {
-      this.applyVolume()
+    if (on) this.stopAll()
+    if (this.soundManager) {
+      try {
+        this.soundManager.mute = on
+      } catch {
+        /* ignore */
+      }
+      if (on) {
+        // 光 mute 不够稳：这个循环 bgm 是 HTML5AudioSound（没有 gainNode），
+        // 实测 stop() 之后它仍留在 getAllPlaying 里。用管理器级别的 stopAll()
+        // 把每一个音源都真正停掉，才是可靠的。
+        try {
+          this.soundManager.stopAll()
+        } catch {
+          /* ignore */
+        }
+      }
     }
+    // 注意：这里必须无条件调用。之前放在 else 分支里，
+    // 开启静音时总线音量不会更新，残留的 0.7 会让音乐继续响。
+    this.applyVolume()
   }
 
   get isVideoSilent() {
@@ -318,6 +337,8 @@ class AudioManager {
 
   /** 播放章节音乐：优先 mp3，否则用合成音乐兜底 */
   playMusic(scene: Phaser.Scene, name: MusicName) {
+    // 记住 SoundManager：视频播放时要靠它把所有 Phaser 音源硬静音
+    this.soundManager = scene.sound
     const ctx = this.ensureCtx()
     if (ctx) {
       this.ensureBuses(ctx)

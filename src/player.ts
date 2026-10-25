@@ -47,6 +47,12 @@ export class Player {
   private lastAutoInteract = 0
   /** 自动交互的冷却，避免同一次行走连续触发 */
   private autoCooldown = 900
+  /**
+   * 自动交互是否"上膛"。
+   * 一次靠近只触发一次：触发后置 false，必须离开所有交互点（best < 0）才复位。
+   * 否则站在朋友旁边，对话一结束冷却到期就会把同一段对话再放一遍。
+   */
+  private autoArmed = true
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     this.scene = scene
@@ -335,11 +341,16 @@ export class Player {
       this.nearIndex = best
       this.onNearChange?.(best)
     }
+    // 离开所有交互点之后重新"上膛"：一次靠近只自动触发一次。
+    // 否则对话结束时人还站在原地，冷却一到就会把同一段对话再放一遍。
+    if (best < 0) this.autoArmed = true
   }
 
   /** 走到就交互：手机端完全不需要按键 */
   private tryAutoInteract() {
     if (!this.targets.length || this.freezeMs > 0) return
+    // 一次靠近只触发一次：必须离开交互范围才会重新触发
+    if (!this.autoArmed) return
     const now = this.scene.time.now
     if (now - this.lastAutoInteract < this.autoCooldown) return
 
@@ -354,6 +365,8 @@ export class Player {
     if (!best) return
 
     this.lastAutoInteract = now
+    // 触发后立刻"退膛"，防止对话结束时站在原地又触发一次
+    this.autoArmed = false
     // 站定后再触发，避免刚走到就弹出对话导致手感突兀
     const t = best.t
     try {
