@@ -63,6 +63,7 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
     let settled = false
     let el: HTMLVideoElement | null = null
     let skipTimer = 0
+    let retryTimer = 0
 
     const finish = (result: VideoResult) => {
       if (settled) return
@@ -74,6 +75,7 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
       }
       // 清掉所有挂载的监听与 DOM，避免残留
       window.clearTimeout(skipTimer)
+      window.clearTimeout(retryTimer)
       if (el) {
         el.removeEventListener('ended', onEnded)
         el.removeEventListener('error', onError)
@@ -184,10 +186,13 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
     }
 
     let started = false
+    let playedAtLeastOnce = false
     const onPlaying = () => {
       // 真正开始出画面时再淡入，避免黑屏闪烁
       wrap.style.opacity = '1'
+      buffering.textContent = '缓冲中…'
       buffering.style.display = 'none'
+      playedAtLeastOnce = true
       // 只触发一次：下面挂了多个事件做兜底（见下），不能重复回调
       if (started) return
       started = true
@@ -202,30 +207,50 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
       buffering.style.display = 'block'
     }
     const onEnded = () => finish('ended')
-    // 出错不立刻放弃：手机网络抖动 / 服务器某个分段请求失败时，
-    // 浏览器会发 error 并停在当前位置。先尝试"续播"两次，
-    // 免得视频看到一半突然消失（以前就是直接 finish('missing')）。
+
+    // 出错处理：只要视频已经出过画面，就**绝不自动退出**——那会让人觉得
+    // "看到一半被踢回游戏"。改成保留画面、显示提示、自动重连。
+    // 只有"从头到尾一帧都没播出来"（文件缺失/解码不了）才真正跳过。
     let recoveries = 0
+    const recover = () => {
+      const at = el.currentTime
+      recoveries++
+      const delay = Math.min(4000, 600 * recoveries)
+      buffering.textContent = '网络有点慢，正在重连…'
+      buffering.style.display = 'block'
+      window.clearTimeout(retryTimer)
+      retryTimer = window.setTimeout(() => {
+        try {
+          // 先试继续播；不行再重新加载并跳回原位置
+          void el
+            .play()
+            .then(() => {
+              buffering.textContent = '缓冲中…'
+            })
+            .catch(() => {
+              el.load()
+              el.currentTime = at
+              void el.play().catch(() => recover())
+            })
+        } catch {
+          recover()
+        }
+      }, delay)
+    }
+
     const onError = () => {
       const code = el.error ? el.error.code : 0
       const at = el.currentTime
-      if (at > 1 && recoveries < 2) {
-        recoveries++
-        console.warn(`[finale-video] 播放中断（code=${code}，${at.toFixed(1)}s），尝试恢复第 ${recoveries} 次`)
-        try {
-          el.load()
-          el.currentTime = at
-          void el.play().catch(() => {})
-          return
-        } catch {
-          /* 恢复失败就走下面的收尾 */
-        }
+      if (at > 1 || playedAtLeastOnce) {
+        console.warn(`[finale-video] 播放中断（code=${code}，${at.toFixed(1)}s），自动重连（第 ${recoveries + 1} 次）`)
+        recover()
+        return
       }
-      // 文件不存在或解码失败：当作没有视频，流程继续
+      // 一帧都没播出来：文件不存在或无法解码，当作没有视频
       console.warn(`[finale-video] 无法播放 ${src}（code=${code}），已跳过`)
       finish('missing')
     }
-    // 长时间卡住（不是报错）也要有出路：标记一下，便于提示"缓冲中"
+    // 长时间卡住（不是报错）也要有提示
     const onStalled = () => {
       buffering.style.display = 'block'
     }

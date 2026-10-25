@@ -81,9 +81,11 @@ try {
   }
   console.log(`播放到 ${Number(t).toFixed(1)}s`)
 
-  // 手动触发一次 error（模拟网络/解码中断）
-  await ev(send, `(() => { const v = document.querySelector('#finale-video video'); v.dispatchEvent(new Event('error')); return true })()`)
-  await sleep(1200)
+  // 连续触发 4 次 error（模拟反复断流），叠层必须一直存在
+  for (let i = 0; i < 4; i++) {
+    await ev(send, `(() => { const v = document.querySelector('#finale-video video'); if (v) v.dispatchEvent(new Event('error')); return true })()`)
+    await sleep(900)
+  }
   const after = await ev(send, `(() => {
     const v = document.querySelector('#finale-video video')
     const w = document.getElementById('finale-video')
