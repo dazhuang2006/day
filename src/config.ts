@@ -22,7 +22,7 @@ export const FINALE_VIDEO = {
   /** 跳过按钮出现前的等待秒数（避免刚开播就被手快点掉） */
   skipAfter: 3,
   /** 信读完后那个按钮上的文字（点它才播放视频） */
-  letterButtonText: '打开给你的礼物 ▸'
+  letterButtonText: '把回忆拼好送你 ▸'
 }
 
 // 存档版本：数据结构不兼容时递增，旧存档会被安全忽略

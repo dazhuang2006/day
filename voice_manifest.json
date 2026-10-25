@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-25T02:44:43.356Z",
+  "generatedAt": "2026-10-25T03:27:13.157Z",
   "note": "由 tools/extract-lines.mjs 自动生成；id = speaker + 文本哈希，台词不变则 id 不变",
   "counts": {
-    "total": 115,
+    "total": 114,
     "bySpeaker": {
       "applejack": 19,
       "fluttershy": 11,
@@ -10,7 +10,7 @@
       "rainbow": 8,
       "rarity": 12,
       "starberry": 38,
-      "twilight": 15
+      "twilight": 14
     },
     "narratorCandidates": 38
   },
@@ -539,11 +539,6 @@
       "id": "twilight_61273315d8",
       "speaker": "twilight",
       "text": "先找个稳妥的地方放好。"
-    },
-    {
-      "id": "twilight_63d1216036",
-      "speaker": "twilight",
-      "text": "（紫悦笑了一下，把那张时间表折好收进鞍包。）"
     },
     {
       "id": "twilight_66bdd2fdfa",

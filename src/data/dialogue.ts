@@ -88,7 +88,8 @@ export const twilightBrief: Line[] = [
   { who: 'twilight', text: '先找个稳妥的地方放好。' },
   { who: 'twilight', text: '至于包装要用的小东西——彩带、星星、包装纸、挂件，一样都不能少。' },
   { who: 'starberry', text: '嗯，交给我吧。' },
-  { who: 'twilight', text: '（紫悦笑了一下，把那张时间表折好收进鞍包。）' }
+  // 旁白动作，不是紫悦说的话（和珍奇那句同样的问题）
+  { text: '（紫悦笑了一下，把那张时间表折好收进鞍包。）' }
 ]
 
 export const boxItemHints: Record<string, string> = {

@@ -135,6 +135,7 @@ async function main() {
 
     // 有真人配音的句子：第一次调用触发异步解码 -> 'loading'，
     // 等解码完再调应当返回 'clip'。这条同时验证加载-回调链路。
+    // 注意：星莓的配音已按需求移除，所以这里改用珍奇/紫悦的句子。
     const pollSay = async (speaker, text) => {
       let r = await evaluate(send, `window.__say(${JSON.stringify(speaker)}, ${JSON.stringify(text)})`)
       const first = r
@@ -145,19 +146,23 @@ async function main() {
       return { first, final: r }
     }
 
-    const line1 = await pollSay('starberry', '我们回小屋吧。')
+    const line1 = await pollSay('rarity', '亲爱的，你终于来了。')
     console.log(`有真人配音的句子 -> 首次=${line1.first} 最终=${line1.final}`)
 
-    // 索引里确实存在的第二句（assets/audio/voice 里目前有两条样例）
-    const line2 = await pollSay('starberry', '紫悦，我准备得怎么样？')
+    const line2 = await pollSay('twilight', '星莓，你来了。')
     console.log(`索引里第二句 -> 首次=${line2.first} 最终=${line2.final}`)
+
+    // 星莓配音已移除：她的台词必须是 missing（只有文字、没有声音）
+    const starberry = await pollSay('starberry', '我们回小屋吧。')
+    console.log(`星莓（已移除配音）-> 首次=${starberry.first} 最终=${starberry.final}`)
 
     const withClip = line1.final
     const secondLine = line2.final
+    const starberryState = starberry.final
 
-    // 完全没有配音的角色：必须是 missing，且不能发出任何合成声音
+    // 没有这句配音时：必须是 missing，且不能发出任何合成声音
     const noClip = await evaluate(send, `window.__say('twilight', '这句话肯定没有配音。')`)
-    console.log('无配音角色 ->', noClip)
+    console.log('无配音台词 ->', noClip)
 
     // 空串边界
     const empty = await evaluate(send, `window.__say('starberry', '')`)
@@ -185,6 +190,7 @@ async function main() {
     const pass =
       withClip === 'clip' &&
       secondLine === 'clip' &&
+      starberryState === 'missing' &&
       noClip === 'missing' &&
       (empty === 'missing' || empty === 'clip') &&
       hasSayText === false &&

@@ -66,7 +66,7 @@ const LABELS = `(() => {
   if (!s) return { noScene: true }
   const texts = s.children.list.filter((c) => c.type === 'Text')
   const strs = texts.map((c) => String(c.text ?? ''))
-  const btn = texts.find((c) => String(c.text ?? '').includes('礼物'))
+  const btn = texts.find((c) => String(c.text ?? '').includes('把回忆拼好'))
   return {
     overlay: !!document.getElementById('finale-video'),
     hint: strs.find((t) => t.includes('点击')) || null,
@@ -163,7 +163,7 @@ try {
   console.log(`    ${rounds} 轮后:`, JSON.stringify({ button: st && st.button, overlay: st && st.overlay, probe: st && st.probe }))
   check('出现按钮', sawButton === true, sawButton ? `「${st.button}」` : '未出现')
   check('按钮出现前视频未自动播放', overlayEarly === false)
-  check('按钮文字正确', !!(st && st.button && st.button.includes('礼物')), st ? String(st.button) : '')
+  check('按钮文字正确', !!(st && st.button && st.button.includes('把回忆拼好')), st ? String(st.button) : '')
 
   await sleep(2000)
   check('等待 2 秒视频仍未自动播放', (await ev(send, `!!document.getElementById('finale-video')`)) === false)
