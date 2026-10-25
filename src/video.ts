@@ -202,10 +202,32 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
       buffering.style.display = 'block'
     }
     const onEnded = () => finish('ended')
+    // 出错不立刻放弃：手机网络抖动 / 服务器某个分段请求失败时，
+    // 浏览器会发 error 并停在当前位置。先尝试"续播"两次，
+    // 免得视频看到一半突然消失（以前就是直接 finish('missing')）。
+    let recoveries = 0
     const onError = () => {
+      const code = el.error ? el.error.code : 0
+      const at = el.currentTime
+      if (at > 1 && recoveries < 2) {
+        recoveries++
+        console.warn(`[finale-video] 播放中断（code=${code}，${at.toFixed(1)}s），尝试恢复第 ${recoveries} 次`)
+        try {
+          el.load()
+          el.currentTime = at
+          void el.play().catch(() => {})
+          return
+        } catch {
+          /* 恢复失败就走下面的收尾 */
+        }
+      }
       // 文件不存在或解码失败：当作没有视频，流程继续
-      console.warn(`[finale-video] 无法播放 ${src}，已跳过`)
+      console.warn(`[finale-video] 无法播放 ${src}（code=${code}），已跳过`)
       finish('missing')
+    }
+    // 长时间卡住（不是报错）也要有出路：标记一下，便于提示"缓冲中"
+    const onStalled = () => {
+      buffering.style.display = 'block'
     }
 
     // playing 是主事件；但视频可能在小文件/缓存命中时"瞬间就绪"，
@@ -214,6 +236,7 @@ export function playFinaleVideo(opts: PlayVideoOptions): Promise<VideoResult> {
     el.addEventListener('loadeddata', onPlaying)
     el.addEventListener('timeupdate', onPlaying)
     el.addEventListener('waiting', onWaiting)
+    el.addEventListener('stalled', onStalled)
     el.addEventListener('ended', onEnded)
     el.addEventListener('error', onError)
     window.addEventListener('keydown', onKey)

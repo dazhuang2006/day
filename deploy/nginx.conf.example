@@ -29,7 +29,6 @@ server {
     # 大文件必须支持分段请求，否则拖进度条会失效、Safari 有时直接不播。
     location /assets/video/ {
         try_files $uri =404;
-        add_header Accept-Ranges bytes;
         add_header Cache-Control "public, max-age=2592000";
         # 可选：限制单个连接的带宽
         # limit_rate 2m;
@@ -51,7 +50,6 @@ server {
     # ---------- 背景音乐 ----------
     location /assets/audio/ {
         try_files $uri =404;
-        add_header Accept-Ranges bytes;
         add_header Cache-Control "public, max-age=604800";
     }
 

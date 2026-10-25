@@ -45,10 +45,10 @@ server {
     # BootScene 一直卡在 LOADING，整个游戏白屏。
     # ------------------------------------------------------------------
 
-    # 结尾视频：必须支持分段请求，否则拖不了进度条、Safari 可能不播
+    # 结尾视频：nginx 对静态文件会自动发 Accept-Ranges，这里**不要再手动加**。
+    # 手加会和 nginx 自己的合并成 'bytes,bytes'，属于不合规头，Safari 播放中途会放弃。
     location /assets/video/ {
         try_files $uri =404;
-        add_header Accept-Ranges bytes;
         add_header Cache-Control "public, max-age=2592000";
     }
 
@@ -66,7 +66,6 @@ server {
 
     location /assets/audio/ {
         try_files $uri =404;
-        add_header Accept-Ranges bytes;
         add_header Cache-Control "public, max-age=604800";
     }
 
